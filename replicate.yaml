@@ -11,14 +11,10 @@ build:
     - "torchaudio>=2.0.0"
     - "transformers>=4.30.0"
     - "accelerate>=0.20.0"
-    - "sentencepiece>=0.1.99"
-    - "protobuf>=3.20.0"
-    - "numpy>=1.24.0"
-    - "scipy>=1.10.0"
     - "librosa>=0.10.0"
-    - "soundfile>=0.12.0"
-    - "datasets>=2.12.0"
-    - "huggingface-hub>=0.15.0"
+    - "pydub>=0.25.0"
+    - "loguru>=0.7.0"
+    - "click>=8.0.0"
     - "git+https://github.com/boson-ai/higgs-audio.git"
 
 predict: predict.py::predict
