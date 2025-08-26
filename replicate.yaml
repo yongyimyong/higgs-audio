@@ -1,0 +1,16 @@
+# replicate.yaml
+build:
+  gpu: true
+  python_version: "3.10" # Higgs Audio의 권장 버전에 맞춤
+  python_packages:
+    - "torch==2.3.0"
+    - "torchaudio==2.3.0"
+    - "transformers==4.41.2"
+    - "scipy==1.13.1"
+    - "soundfile==0.12.1"
+    - "einops==0.8.0"
+    # requirements.txt의 다른 주요 패키지들을 여기에 명시
+
+# Higgs Audio를 실행할 GPU를 지정합니다. L4는 24GB VRAM을 가집니다.
+predict:
+  run: "cog predict -i text='안녕하세요, 레플리케이트입니다.'"
