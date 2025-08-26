@@ -9,23 +9,18 @@ on:
         default: 'yongyimyong/voice-host-guide'
   push:
     branches:
-      - main
+      - master
     paths:
       - 'predict.py'
       - 'replicate.yaml'
       - 'requirements.txt'
+      - '.github/workflows/push.yml'
 
 jobs:
   push_to_replicate:
     name: Push to Replicate
     runs-on: ubuntu-latest
     steps:
-      - name: Free disk space
-        uses: jlumbroso/free-disk-space@v1.3.1
-        with:
-          tool-cache: false
-          docker-images: false
-
       - name: Checkout
         uses: actions/checkout@v4
 
