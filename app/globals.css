@@ -31,7 +31,7 @@ body {
 
 /* Custom scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 
 ::-webkit-scrollbar-track {
@@ -40,33 +40,22 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #c1c1c1;
-  border-radius: 3px;
+  border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
   background: #a8a8a8;
 }
 
-/* Audio player custom styles */
-.audio-player {
-  @apply bg-white rounded-lg shadow-lg p-4;
-}
-
-.audio-controls {
-  @apply flex items-center justify-between space-x-4;
-}
-
-.audio-progress {
-  @apply flex-1 h-2 bg-gray-200 rounded-full overflow-hidden;
-}
-
-.audio-progress-bar {
-  @apply h-full bg-primary-500 transition-all duration-300;
+/* Audio player styles */
+audio {
+  width: 100%;
+  margin: 10px 0;
 }
 
 /* Button styles */
 .btn-primary {
-  @apply bg-primary-600 hover:bg-primary-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  @apply bg-primary-500 hover:bg-primary-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
 }
 
 .btn-secondary {
@@ -74,12 +63,12 @@ body {
 }
 
 .btn-success {
-  @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
+  @apply bg-green-500 hover:bg-green-600 text-white font-medium py-2 px-4 rounded-lg transition-colors duration-200;
 }
 
 /* Card styles */
 .card {
-  @apply bg-white rounded-lg shadow-md p-6;
+  @apply bg-white rounded-lg shadow-md p-6 border border-gray-200;
 }
 
 .card-header {
@@ -103,8 +92,8 @@ body {
   @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500;
 }
 
-.form-textarea {
-  @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-vertical;
+.form-textarea {      
+  @apply w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 resize-y;      
 }
 
 .form-select {
