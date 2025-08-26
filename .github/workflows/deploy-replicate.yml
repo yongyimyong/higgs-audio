@@ -1,0 +1,48 @@
+name: Deploy to Replicate
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'replicate/**'
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+        
+    - name: Install Replicate CLI
+      run: |
+        pip install replicate
+        
+    - name: Deploy to Replicate
+      env:
+        REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
+      run: |
+        cd replicate
+        replicate push sosoroy/higgs-audio-guide
+        
+    - name: Update deployment status
+      run: |
+        echo "Deployment completed at $(date)" >> deployment.log
+        
+    - name: Notify deployment success
+      if: success()
+      run: |
+        echo "✅ Replicate 모델 배포 성공!"
+        echo "모델 URL: https://replicate.com/sosoroy/higgs-audio-guide"
+        
+    - name: Notify deployment failure
+      if: failure()
+      run: |
+        echo "❌ Replicate 모델 배포 실패!"
+        echo "로그를 확인해주세요."

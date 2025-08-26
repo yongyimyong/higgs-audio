@@ -1,298 +1,147 @@
-<h1 align="center">Higgs Audio V2: Redefining Expressiveness in Audio Generation</h1>
+# 보이스 호스트 (Voice Host) - v2.0 (Final MVP)
 
-<div align="center" style="display: flex; justify-content: center; margin-top: 10px;">
-  <a href="https://boson.ai/blog/higgs-audio-v2"><img src='https://img.shields.io/badge/🚀-Launch Blogpost-228B22' style="margin-right: 5px;"></a>
-  <a href="https://boson.ai/demo/tts"><img src="https://img.shields.io/badge/🕹️-Boson%20AI%20Playground-9C276A" style="margin-right: 5px;"></a>
-  <a href="https://huggingface.co/spaces/smola/higgs_audio_v2"><img src="https://img.shields.io/badge/🎮-HF%20Space%20Playground-8A2BE2" style="margin-right: 5px;"></a>
-  <a href="https://huggingface.co/bosonai/higgs-audio-v2-generation-3B-base"><img src="https://img.shields.io/badge/🤗-Checkpoints (3.6B LLM + 2.2B audio adapter)-ED5A22.svg" style="margin-right: 5px;"></a>
-</div>
+**프로젝트명**: 보이스 호스트 (Voice Host)  
+**버전**: 2.0 (MVP 최종안)  
+**작성일**: 2025년 8월 26일  
+**프로젝트 ID**: fe74270d-8007-4ae1-8d44-a0c50d004635
 
+## 1. 개요 (Overview) 🗺️
 
-We are open-sourcing Higgs Audio v2, a powerful audio foundation model pretrained on over 10 million hours of audio data and a diverse set of text data. Despite having no post-training or fine-tuning, Higgs Audio v2 excels in expressive audio generation, thanks to its deep language and acoustic understanding.
+보이스 호스트는 무인 숙소 게스트를 위한 초현실적 AI 오디오 가이드 웹 애플리케이션이다. Higgs Audio v2 모델의 표현력 높은 음성 생성 능력을 활용하여, 게스트에게는 따뜻하고 효율적인 경험을, 호스트에게는 간편한 비대면 관리 솔루션을 제공하는 것을 목표로 한다.
 
-On [EmergentTTS-Eval](https://github.com/boson-ai/emergenttts-eval-public), it achieves win rates of **75.7%** and **55.7%** over "gpt-4o-mini-tts" on the "Emotions" and "Questions" categories, respectively. It also obtains state-of-the-art performance on traditional TTS benchmarks like Seed-TTS Eval and Emotional Speech Dataset (ESD). Moreover, the model demonstrates capabilities rarely seen in previous systems, including generating natural multi-speaker dialogues in multiple languages, automatic prosody adaptation during narration, melodic humming with the cloned voice, and simultaneous generation of speech and background music.
+### 핵심 기술 파이프라인
 
-<p align="center">
-    <img src="figures/emergent-tts-emotions-win-rate.png" width=900>
-</p>
+- **AI 모델**: boson-ai/higgs-audio-v2
+- **AI 호스팅**: Replicate
+- **배포 자동화 (CI/CD)**: GitHub Actions
+- **백엔드**: Supabase (DB, Auth, Storage, Edge Functions)
+- **프론트엔드**: React (UI는 v0.dev로 신속 개발)
+- **로컬 개발 위치**: C:\Users\dream\.cursor\JEJU\
 
-Here's the demo video that shows some of its emergent capabilities (remember to unmute):
+## 2. 사용자 스토리 및 핵심 기능 (User Stories & Features) 🎯
 
-<video src="https://github.com/user-attachments/assets/0fd73fad-097f-48a9-9f3f-bc2a63b3818d" type="video/mp4" width="80%" controls>
-</video>
+### A. 🧑‍💼 호스트 (Host)
 
-Here's another demo video that show-cases the model's multilingual capability and how it enabled live translation (remember to unmute):
+**EPIC**: 나는 내 숙소만의 특별한 오디오 가이드를 5분 안에 만들고 싶다.
 
-<video src="https://github.com/user-attachments/assets/2b9b01ff-67fc-4bd9-9714-7c7df09e38d6" type="video/mp4" width="80%" controls>
-</video>
+#### 기능 1: 콘텐츠 템플릿
+- 관리 페이지에서 **[필수 정보]**와 [호스트 스토리] 탭을 통해 체계적으로 콘텐츠를 관리한다.
+- 각 탭에는 [와이파이], [환영 메시지] 등 미리 정의된 텍스트 입력란이 제공된다.
 
-## Installation
+#### 기능 2: AI 음성 스타일 지정
+- 각 텍스트 입력란 옆에 [음성 스타일] 드롭다운 메뉴를 제공한다.
+- 따뜻하게, 활기차게, 차분하게 등 Higgs Audio의 표현력을 활용할 수 있는 옵션을 선택하여 오디오 분위기를 직접 지정한다.
 
-We recommend to use NVIDIA Deep Learning Container to manage the CUDA environment. Following are two docker images that we have verified:
-- nvcr.io/nvidia/pytorch:25.02-py3
-- nvcr.io/nvidia/pytorch:25.01-py3
+#### 기능 3: 원클릭 음성 생성
+- [음성 생성] 버튼을 누르면, Supabase Edge Function이 Replicate API를 호출하여 텍스트와 스타일을 기반으로 음성 파일을 생성하고 Supabase Storage에 자동 저장한다.
 
-Here's an example command for launching a docker container environment. Please also check the [official NVIDIA documentations](https://catalog.ngc.nvidia.com/orgs/nvidia/containers/pytorch).
+### B. 🏕️ 투숙객 (Guest)
 
-```bash
-docker run --gpus all --ipc=host --net=host --ulimit memlock=-1 --ulimit stack=67108864 -it --rm nvcr.io/nvidia/pytorch:25.02-py3 bash
-```
+**EPIC**: 나는 숙소에 도착하자마자 모든 정보를 쉽고 편안하게 듣고 싶다.
 
-### Option 1: Direct installation
+#### 기능 1: QR코드를 통한 즉시 접속
+- 숙소에 비치된 QR코드 스캔 시, 앱 설치나 로그인 없이 즉시 오디오 가이드 페이지에 접속한다.
 
+#### 기능 2: 직관적인 오디오 플레이어
+- **[🏠 필수 정보]**와 [🧡 호스트 스토리] 두 개의 명확한 카테고리 중에서 원하는 주제를 선택하여 청취한다.
+- 오디오 재생 중에도 다른 목록을 탐색할 수 있는 미니 플레이어를 제공한다.
 
-```bash
-git clone https://github.com/boson-ai/higgs-audio.git
-cd higgs-audio
+## 3. 기술 아키텍처 및 개발 로드맵 (Architecture & Roadmap) 🚀
 
-pip install -r requirements.txt
-pip install -e .
-```
+### 아키텍처 흐름
 
-### Option 2: Using venv
+1. **개발**: 로컬(C:\...)에서 개발 후 higgs-audio Fork 저장소에 predict.py, replicate.yaml 등 설정 파일을 포함하여 코드를 git push.
+2. **자동 배포**: GitHub Actions가 코드 변경을 감지하고, Replicate에 모델을 자동으로 빌드 및 배포하여 API 엔드포인트를 생성/업데이트.
+3. **음성 생성**: 호스트가 앱에서 [음성 생성] 버튼 클릭 → Supabase Edge Function이 Replicate API 호출 → 생성된 음성 파일을 Supabase Storage에 저장.
+4. **가이드 청취**: 게스트가 앱 접속 → Supabase DB에서 음성 파일 URL을 읽어와 재생.
 
-```bash
-git clone https://github.com/boson-ai/higgs-audio.git
-cd higgs-audio
+### 개발 로드맵 (Sprints)
 
-python3 -m venv higgs_audio_env
-source higgs_audio_env/bin/activate
-pip install -r requirements.txt
-pip install -e .
-```
+#### ✅ Sprint 0: 배포 파이프라인 구축 (완료)
+- [x] boson-ai/higgs-audio GitHub 저장소를 sosoroy 계정으로 Fork.
+- [x] Fork한 저장소에 **predict.py**와 replicate.yaml 파일 생성 및 설정.
+- [x] Replicate 웹사이트에서 모델 '빈 껍데기' 생성 (sosoroy/higgs-audio-guide).
+- [x] GitHub 저장소 Settings > Secrets에 REPLICATE_CLI_AUTH_TOKEN 등록.
+- [x] .github/workflows/ 폴더에 배포용 YAML 파일을 추가하고, 수동 실행하여 Replicate에 첫 배포를 성공시킨다. (실사용 가능한 API 엔드포인트 확보)
 
+#### 🔄 Sprint 1: 백엔드 및 프론트엔드 UI 구축 (진행 중)
+- [x] Supabase 프로젝트 생성, DB 스키마 설계 및 Auth 설정.
+- [ ] v0.dev를 사용하여 호스트용 관리 페이지와 게스트용 플레이어 페이지의 UI 컴포넌트를 신속하게 생성.
 
-### Option 3: Using conda
-```bash
-git clone https://github.com/boson-ai/higgs-audio.git
-cd higgs-audio
+#### ⏳ Sprint 2: 기능 통합 및 완성 (대기)
+- [ ] 프론트엔드 UI와 Supabase DB 연동.
+- [ ] 호스트 관리 페이지의 [음성 생성] 버튼과 Supabase Edge Function을 연동하여 Sprint 0에서 만든 Replicate API 호출 기능 구현.
+- [ ] End-to-End 테스트 및 최종 배포.
 
-conda create -y --prefix ./conda_env --override-channels --strict-channel-priority --channel "conda-forge" "python==3.10.*"
-conda activate ./conda_env
-pip install -r requirements.txt
-pip install -e .
+## 4. 기술 스택 상세
 
-# Uninstalling environment:
-conda deactivate
-conda remove -y --prefix ./conda_env --all
-```
+### AI 모델: boson-ai/higgs-audio-v2-generation-3B-base
+- **모델 크기**: 5.77B params
+- **특징**: 
+  - 10M+ 시간의 오디오 데이터로 사전 훈련
+  - 감정 표현력이 뛰어난 음성 생성
+  - EmergentTTS-Eval에서 GPT-4o-mini-tts 대비 75.7% 승률 (감정 카테고리)
+  - 다국어 지원 및 멀티스피커 대화 생성 가능
 
-### Option 4: Using uv
-```bash
-git clone https://github.com/boson-ai/higgs-audio.git
-cd higgs-audio
+### 개발 환경
+- **로컬 개발**: C:\Users\dream\.cursor\JEJU\
+- **버전 관리**: GitHub
+- **배포**: Replicate + GitHub Actions
+- **백엔드**: Supabase
+- **프론트엔드**: React + v0.dev
 
-uv venv --python 3.10
-source .venv/bin/activate
-uv pip install -r requirements.txt
-uv pip install -e .
-```
-
-### Option 5: Using vllm
-
-For advanced usage with higher throughput, we also built OpenAI compatible API server backed by vLLM engine for you to use.
-Please refer to [examples/vllm](./examples/vllm) for more details.
-
-
-## Usage
-
-> [!TIP]
-> For optimal performance, run the generation examples on a machine equipped with GPU with at least 24GB memory!
-
-### Get Started
-
-Here's a basic python snippet to help you get started.
-
-```python
-from boson_multimodal.serve.serve_engine import HiggsAudioServeEngine, HiggsAudioResponse
-from boson_multimodal.data_types import ChatMLSample, Message, AudioContent
-
-import torch
-import torchaudio
-import time
-import click
-
-MODEL_PATH = "bosonai/higgs-audio-v2-generation-3B-base"
-AUDIO_TOKENIZER_PATH = "bosonai/higgs-audio-v2-tokenizer"
-
-system_prompt = (
-    "Generate audio following instruction.\n\n<|scene_desc_start|>\nAudio is recorded from a quiet room.\n<|scene_desc_end|>"
-)
-
-messages = [
-    Message(
-        role="system",
-        content=system_prompt,
-    ),
-    Message(
-        role="user",
-        content="The sun rises in the east and sets in the west. This simple fact has been observed by humans for thousands of years.",
-    ),
-]
-device = "cuda" if torch.cuda.is_available() else "cpu"
-
-serve_engine = HiggsAudioServeEngine(MODEL_PATH, AUDIO_TOKENIZER_PATH, device=device)
-
-output: HiggsAudioResponse = serve_engine.generate(
-    chat_ml_sample=ChatMLSample(messages=messages),
-    max_new_tokens=1024,
-    temperature=0.3,
-    top_p=0.95,
-    top_k=50,
-    stop_strings=["<|end_of_text|>", "<|eot_id|>"],
-)
-torchaudio.save(f"output.wav", torch.from_numpy(output.audio)[None, :], output.sampling_rate)
-```
-
-We also provide a list of examples under [examples](./examples). In the following we highlight a few examples to help you use Higgs Audio v2.
-
-### Zero-Shot Voice Cloning
-Generate audio that sounds similar as the provided [reference audio](./examples/voice_prompts/belinda.wav).
-
-```bash
-python3 examples/generation.py \
---transcript "The sun rises in the east and sets in the west. This simple fact has been observed by humans for thousands of years." \
---ref_audio belinda \
---temperature 0.3 \
---out_path generation.wav
-```
-
-The generation script will automatically use `cuda:0` if it founds cuda is available. To change the device id, specify `--device_id`:
-
-```bash
-python3 examples/generation.py \
---transcript "The sun rises in the east and sets in the west. This simple fact has been observed by humans for thousands of years." \
---ref_audio belinda \
---temperature 0.3 \
---device_id 0 \
---out_path generation.wav
-```
-
-You can also try other voices. Check more example voices in [examples/voice_prompts](./examples/voice_prompts). You can also add your own voice to the folder.
-
-```bash
-python3 examples/generation.py \
---transcript "The sun rises in the east and sets in the west. This simple fact has been observed by humans for thousands of years." \
---ref_audio broom_salesman \
---temperature 0.3 \
---out_path generation.wav
-```
-
-### Single-speaker Generation with Smart Voice
-If you do not specify reference voice, the model will decide the voice based on the transcript it sees.
-
-```bash
-python3 examples/generation.py \
---transcript "The sun rises in the east and sets in the west. This simple fact has been observed by humans for thousands of years." \
---temperature 0.3 \
---out_path generation.wav
-```
-
-
-### Multi-speaker Dialog with Smart Voice
-Generate multi-speaker dialog. The model will decide the voices based on the transcript it sees.
-
-```bash
-python3 examples/generation.py \
---transcript examples/transcript/multi_speaker/en_argument.txt \
---seed 12345 \
---out_path generation.wav
-```
-
-### Multi-speaker Dialog with Voice Clone
-
-Generate multi-speaker dialog with the voices you picked.
-
-```bash
-python3 examples/generation.py \
---transcript examples/transcript/multi_speaker/en_argument.txt \
---ref_audio belinda,broom_salesman \
---ref_audio_in_system_message \
---chunk_method speaker \
---seed 12345 \
---out_path generation.wav
-```
-
-
-## Technical Details
-<img src="figures/higgs_audio_v2_architecture_combined.png" width=900>
-
-
-Higgs Audio v2 adopts the "generation variant" depicted in the architecture figure above. Its strong performance is driven by three key technical innovations:
-- We developed an automated annotation pipeline that leverages multiple ASR models, sound event classification models, and our in-house audio understanding model. Using this pipeline, we cleaned and annotated 10 million hours audio data, which we refer to as **AudioVerse**. The in-house understanding model is finetuned on top of [Higgs Audio v1 Understanding](https://www.boson.ai/blog/higgs-audio), which adopts the "understanding variant" shown in the architecture figure.
-- We trained a unified audio tokenizer from scratch that captures both semantic and acoustic features. We also open-sourced our evaluation set on [HuggingFace](https://huggingface.co/datasets/bosonai/AudioTokenBench). Learn more in the [tokenizer blog](./tech_blogs/TOKENIZER_BLOG.md).
-- We proposed the DualFFN architecture, which enhances the LLM’s ability to model acoustics tokens with minimal computational overhead. See the [architecture blog](./tech_blogs/ARCHITECTURE_BLOG.md).
-
-## Evaluation
-
-Here's the performance of Higgs Audio v2 on four benchmarks,  [Seed-TTS Eval](https://github.com/BytedanceSpeech/seed-tts-eval), [Emotional Speech Dataset (ESD)](https://paperswithcode.com/dataset/esd), [EmergentTTS-Eval](https://arxiv.org/abs/2505.23009), and Multi-speaker Eval:
-
-#### Seed-TTS Eval & ESD
-
-We prompt Higgs Audio v2 with the reference text, reference audio, and target text for zero-shot TTS. We use the standard evaluation metrics from Seed-TTS Eval and ESD.
-
-|                              | SeedTTS-Eval| | ESD   |                 |
-|------------------------------|--------|--------|---------|-------------------|
-|                              | WER ↓ | SIM ↑ | WER ↓ | SIM (emo2vec) ↑ |
-| Cosyvoice2                   | 2.28   | 65.49  | 2.71    | 80.48             |
-| Qwen2.5-omni†                | 2.33   | 64.10  | -       | -                 |
-| ElevenLabs Multilingual V2   | **1.43**   | 50.00  | 1.66    | 65.87             |
-| Higgs Audio v1                | 2.18   | 66.27  | **1.49**    | 82.84             |
-| Higgs Audio v2 (base)         | 2.44   | **67.70**  | 1.78    | **86.13**         |
-
-
-#### EmergentTTS-Eval ("Emotions" and "Questions")
-
-Following the [EmergentTTS-Eval Paper](https://arxiv.org/abs/2505.23009), we report the win-rate over "gpt-4o-mini-tts" with the "alloy" voice. The judge model is Gemini 2.5 Pro.
-
-| Model                              | Emotions (%) ↑ | Questions (%) ↑ |
-|------------------------------------|--------------|----------------|
-| Higgs Audio v2 (base)               | **75.71%**   | **55.71%**         |
-| [gpt-4o-audio-preview†](https://platform.openai.com/docs/models/gpt-4o-audio-preview)       | 61.64%       | 47.85%         |
-| [Hume.AI](https://www.hume.ai/research)                            | 61.60%       | 43.21%         |
-| **BASELINE:** [gpt-4o-mini-tts](https://platform.openai.com/docs/models/gpt-4o-mini-tts)  | 50.00%       | 50.00%         |
-| [Qwen 2.5 Omni†](https://github.com/QwenLM/Qwen2.5-Omni)      | 41.60%       | 51.78%         |
-| [minimax/speech-02-hd](https://replicate.com/minimax/speech-02-hd)               | 40.86%        | 47.32%         |
-| [ElevenLabs Multilingual v2](https://elevenlabs.io/blog/eleven-multilingual-v2)         | 30.35%       | 39.46%         |
-| [DeepGram Aura-2](https://deepgram.com/learn/introducing-aura-2-enterprise-text-to-speech)                    | 29.28%       | 48.21%         |
-| [Sesame csm-1B](https://github.com/SesameAILabs/csm)                      | 15.96%       | 31.78%         |
-
-<sup><sub>'†' means using the strong-prompting method described in the paper.</sub></sup>
-
-
-#### Multi-speaker Eval
-
-We also designed a multi-speaker evaluation benchmark to evaluate the capability of Higgs Audio v2 for multi-speaker dialog generation. The benchmark contains three subsets
-
-- `two-speaker-conversation`: 1000 synthetic dialogues involving two speakers. We fix two reference audio clips to evaluate the model's ability in double voice cloning for utterances ranging from 4 to 10 dialogues between two randomly chosen persona.
-- `small talk (no ref)`: 250 synthetic dialogues curated in the same way as above, but are characterized by short utterances and a limited number of turns (4–6), we do not fix reference audios in this case and this set is designed to evaluate the model's ability to automatically assign appropriate voices to speakers.
-- `small talk (ref)`: 250 synthetic dialogues similar to above, but contains even shorter utterances as this set is meant to include reference clips in it's context, similar to `two-speaker-conversation`.
-
-
-We report the word-error-rate (WER) and the geometric mean between intra-speaker similarity and inter-speaker dis-similarity on these three subsets. Other than Higgs Audio v2, we also evaluated [MoonCast](https://github.com/jzq2000/MoonCast) and [nari-labs/Dia-1.6B-0626](https://huggingface.co/nari-labs/Dia-1.6B-0626), two of the most popular open-source models capable of multi-speaker dialog generation. Results are summarized in the following table. We are not able to run [nari-labs/Dia-1.6B-0626](https://huggingface.co/nari-labs/Dia-1.6B-0626) on our "two-speaker-conversation" subset due to its strict limitation on the length of the utterances and output audio.
-
-|                                                | two-speaker-conversation |                |small talk |                | small talk (no ref) |                |
-| ---------------------------------------------- | -------------- | ------------------ | ---------- | -------------- | ------------------- | -------------- |
-|                                                | WER ↓                      | Mean Sim & Dis-sim ↑ | WER ↓       |  Mean Sim & Dis-sim ↑ | WER ↓               | Mean Sim & Dis-sim ↑ |
-| [MoonCast](https://github.com/jzq2000/MoonCast) | 38.77                    | 46.02         | **8.33**       | 63.68          | 24.65               | 53.94 |
-| [nari-labs/Dia-1.6B-0626](https://huggingface.co/nari-labs/Dia-1.6B-0626)         | \-                       | \-             | 17.62      | 63.15          | 19.46               | **61.14**          |
-| Higgs Audio v2 (base)     | **18.88**                    | **51.95**          | 11.89      | **67.92**              | **14.65**               | 55.28              |
-
-
-## Citation
-
-If you feel the repository is helpful, please kindly cite as:
+## 5. 프로젝트 구조
 
 ```
-@misc{higgsaudio2025,
-  author       = {{Boson AI}},
-  title        = {{Higgs Audio V2: Redefining Expressiveness in Audio Generation}},
-  year         = {2025},
-  howpublished = {\url{https://github.com/boson-ai/higgs-audio}},
-  note         = {GitHub repository. Release blog available at \url{https://www.boson.ai/blog/higgs-audio-v2}},
-}
+voice-host/
+├── README.md                 # 프로젝트 문서
+├── package.json              # Node.js 의존성
+├── next.config.js            # Next.js 설정
+├── tailwind.config.js        # Tailwind CSS 설정
+├── postcss.config.js         # PostCSS 설정
+├── env.example               # 환경 변수 예시
+├── replicate/                # Replicate 모델 설정
+│   ├── predict.py            # 음성 생성 로직
+│   └── replicate.yaml        # 모델 설정
+├── supabase/                 # Supabase 설정
+│   ├── schema.sql            # 데이터베이스 스키마
+│   └── functions/            # Edge Functions
+│       └── generate-audio/   # 음성 생성 API
+└── .github/workflows/        # GitHub Actions
+    └── deploy-replicate.yml  # 자동 배포 워크플로우
 ```
 
-## Third-Party Licenses
+## 6. 다음 단계 (Next Steps)
 
-The `boson_multimodal/audio_processing/` directory contains code derived from third-party repositories, primarily from [xcodec](https://github.com/zhenye234/xcodec). Please see the [`LICENSE`](boson_multimodal/audio_processing/LICENSE) in that directory for complete attribution and licensing information.
+### Sprint 1 완료를 위한 작업:
+1. **Supabase 프로젝트 설정**
+   - Supabase 대시보드에서 새 프로젝트 생성
+   - `supabase/schema.sql` 실행하여 데이터베이스 스키마 생성
+   - Storage 버킷 'audio-files' 생성
+   - Edge Function 'generate-audio' 배포
+
+2. **환경 변수 설정**
+   - `env.example`을 참고하여 `.env.local` 파일 생성
+   - Supabase URL, API 키, Replicate API 토큰 설정
+
+3. **프론트엔드 UI 개발**
+   - v0.dev를 사용하여 호스트 관리 페이지 생성
+   - v0.dev를 사용하여 게스트 플레이어 페이지 생성
+   - Tailwind CSS 스타일링 적용
+
+### Sprint 2 완료를 위한 작업:
+1. **기능 통합**
+   - 프론트엔드와 Supabase 연동
+   - 음성 생성 버튼과 Edge Function 연동
+   - 오디오 플레이어 구현
+
+2. **테스트 및 배포**
+   - End-to-End 테스트
+   - 프로덕션 배포
+
+## 7. 프로젝트 상태
+
+- [x] PRD 작성 완료
+- [x] Sprint 0: 배포 파이프라인 구축
+- [ ] Sprint 1: 백엔드 및 프론트엔드 UI 구축  
+- [ ] Sprint 2: 기능 통합 및 완성
