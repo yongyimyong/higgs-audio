@@ -1,11 +1,11 @@
-name: Deploy to Replicate
+name: Deploy to Replicate (Legacy)
 
 on:
+  workflow_dispatch:
   push:
     branches: [ main ]
     paths:
       - 'replicate/**'
-  workflow_dispatch:
 
 jobs:
   deploy:
@@ -29,7 +29,7 @@ jobs:
         REPLICATE_API_TOKEN: ${{ secrets.REPLICATE_API_TOKEN }}
       run: |
         cd replicate
-        replicate push sosoroy/higgs-audio-guide
+        replicate push yongyimyong/voice-host-guide
         
     - name: Update deployment status
       run: |
@@ -39,7 +39,7 @@ jobs:
       if: success()
       run: |
         echo "✅ Replicate 모델 배포 성공!"
-        echo "모델 URL: https://replicate.com/sosoroy/higgs-audio-guide"
+        echo "모델 URL: https://replicate.com/yongyimyong/voice-host-guide"
         
     - name: Notify deployment failure
       if: failure()

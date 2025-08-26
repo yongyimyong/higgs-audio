@@ -1,0 +1,51 @@
+name: Push to Replicate
+
+on:
+  workflow_dispatch:
+    inputs:
+      model_name:
+        description: 'Enter the model name, like "yongyimyong/voice-host-guide"'
+        required: true
+        default: 'yongyimyong/voice-host-guide'
+  push:
+    branches:
+      - main
+    paths:
+      - 'predict.py'
+      - 'replicate.yaml'
+      - 'requirements.txt'
+
+jobs:
+  push_to_replicate:
+    name: Push to Replicate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Free disk space
+        uses: jlumbroso/free-disk-space@v1.3.1
+        with:
+          tool-cache: false
+          docker-images: false
+
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Cog
+        uses: replicate/setup-cog@v2
+        with:
+          token: ${{ secrets.REPLICATE_CLI_AUTH_TOKEN }}
+
+      - name: Push to Replicate
+        run: cog push r8.im/${{ inputs.model_name || 'yongyimyong/voice-host-guide' }}
+
+      - name: Notify success
+        if: success()
+        run: |
+          echo "✅ Replicate 모델 배포 성공!"
+          echo "모델 URL: https://replicate.com/${{ inputs.model_name || 'yongyimyong/voice-host-guide' }}"
+          echo "API 엔드포인트: https://api.replicate.com/v1/models/${{ inputs.model_name || 'yongyimyong/voice-host-guide' }}/predictions"
+
+      - name: Notify failure
+        if: failure()
+        run: |
+          echo "❌ Replicate 모델 배포 실패!"
+          echo "로그를 확인해주세요."
