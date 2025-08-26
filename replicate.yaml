@@ -1,16 +1,86 @@
 # replicate.yaml
 build:
   gpu: true
-  python_version: "3.10" # Higgs Audio의 권장 버전에 맞춤
+  cuda: "11.8"
+  python_version: "3.10"
+  system_packages:
+    - "ffmpeg"
+    - "libsndfile1"
   python_packages:
-    - "torch==2.3.0"
-    - "torchaudio==2.3.0"
-    - "transformers==4.41.2"
-    - "scipy==1.13.1"
-    - "soundfile==0.12.1"
-    - "einops==0.8.0"
-    # requirements.txt의 다른 주요 패키지들을 여기에 명시
+    - "torch>=2.0.0"
+    - "torchaudio>=2.0.0"
+    - "transformers>=4.30.0"
+    - "accelerate>=0.20.0"
+    - "sentencepiece>=0.1.99"
+    - "protobuf>=3.20.0"
+    - "numpy>=1.24.0"
+    - "scipy>=1.10.0"
+    - "librosa>=0.10.0"
+    - "soundfile>=0.12.0"
+    - "datasets>=2.12.0"
+    - "huggingface-hub>=0.15.0"
+    - "git+https://github.com/boson-ai/higgs-audio.git"
 
-# Higgs Audio를 실행할 GPU를 지정합니다. L4는 24GB VRAM을 가집니다.
-predict:
-  run: "cog predict -i text='안녕하세요, 레플리케이트입니다.'"
+predict: predict.py::predict
+
+hardware:
+  gpu: "A100"
+
+input:
+  - name: text
+    type: string
+    description: "변환할 텍스트"
+    required: true
+  - name: voice_style
+    type: string
+    description: "음성 스타일"
+    default: "따뜻하게"
+    choices:
+      - "따뜻하게"
+      - "활기차게"
+      - "차분하게"
+      - "전문적으로"
+      - "친근하게"
+  - name: temperature
+    type: float
+    description: "생성 온도 (0.1-1.0)"
+    default: 0.3
+    minimum: 0.1
+    maximum: 1.0
+
+output:
+  - name: audio
+    type: array
+    description: "생성된 오디오 데이터"
+  - name: sampling_rate
+    type: integer
+    description: "샘플링 레이트"
+  - name: duration
+    type: float
+    description: "오디오 길이 (초)"
+  - name: text
+    type: string
+    description: "입력 텍스트"
+  - name: voice_style
+    type: string
+    description: "사용된 음성 스타일"
+  - name: model
+    type: string
+    description: "사용된 모델"
+
+examples:
+  - name: "환영 메시지"
+    input:
+      text: "안녕하세요! 제주도에 오신 것을 환영합니다. 편안한 휴식을 즐기시기 바랍니다."
+      voice_style: "따뜻하게"
+      temperature: 0.3
+  - name: "와이파이 안내"
+    input:
+      text: "와이파이 비밀번호는 'jeju2024'입니다. 연결에 문제가 있으시면 언제든 연락주세요."
+      voice_style: "전문적으로"
+      temperature: 0.3
+  - name: "숙소 소개"
+    input:
+      text: "우리 숙소는 제주 올레길 7코스 근처에 위치해 있어요. 아름다운 바다 전망을 감상하실 수 있습니다."
+      voice_style: "친근하게"
+      temperature: 0.4
